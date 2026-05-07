@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capitalstance Admin Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--nav:#0A1628;--gold:#C9A84C;--gold2:#E8C96A;--white:#F9F7F2;--light:#EEF3F9;--muted:#6B7A8D;--accent:#1B4F72;--success-bg:#EAF3DE;--success-text:#3B6D11;--warning-bg:#FAEEDA;--warning-text:#854F0B;--danger-bg:#FCEBEB;--danger-text:#A32D2D;--info-bg:#E6F1FB;--info-text:#185FA5;--border:#E2E8F0;--bg:#F7F9FC;--surface:#fff;--text:#0A1628;--text2:#6B7A8D;--text3:#9AAAB8}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
+.shell{display:grid;grid-template-columns:210px 1fr;grid-template-rows:52px 1fr;min-height:100vh}
+.topbar{grid-column:1/-1;background:var(--nav);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(201,168,76,.25)}
+.topbar-logo{font-size:14px;font-weight:600;color:#fff;letter-spacing:.02em}
+.topbar-logo span{color:#C9A84C}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-badge{background:rgba(201,168,76,.18);color:#C9A84C;font-size:11px;padding:2px 8px;border-radius:10px}
+.topbar-date{font-size:12px;color:rgba(255,255,255,.55)}
+.avatar{width:30px;height:30px;border-radius:50%;background:#1E3A5F;display:flex;align-items:center;justify-content:center;color:#C9A84C;font-size:11px;font-weight:600}
+.sidebar{background:#fff;border-right:1px solid var(--border);padding:14px 0;overflow-y:auto}
+.nav-section{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:14px 16px 5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;color:var(--text2);border-left:2px solid transparent;transition:.15s;font-size:12.5px;user-select:none}
+.nav-item:hover{background:var(--light);color:var(--text)}
+.nav-item.active{color:#C9A84C;border-left-color:#C9A84C;background:rgba(201,168,76,.07)}
+.nav-item svg{width:14px;height:14px;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--danger-bg);color:var(--danger-text);font-size:10px;padding:1px 6px;border-radius:8px}
+.main{padding:22px;overflow-y:auto}
+.view{display:none}
+.view.active{display:block}
+.page-title{font-size:17px;font-weight:600;color:var(--text);margin-bottom:3px}
+.page-sub{font-size:12px;color:var(--text2);margin-bottom:18px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:18px}
+.metric{background:#fff;border:1px solid var(--border);border-radius:8px;padding:13px 14px}
+.metric-label{font-size:11px;color:var(--text2);margin-bottom:5px}
+.metric-value{font-size:23px;font-weight:600;color:var(--text)}
+.metric-sub{font-size:11px;margin-top:3px}
+.up{color:var(--success-text)}.warn{color:var(--warning-text)}.danger{color:var(--danger-text)}
+.card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:15px;margin-bottom:12px}
+.card-title{font-size:13px;font-weight:600;margin-bottom:13px;color:var(--text)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{font-size:11px;font-weight:600;color:var(--text2);text-align:left;padding:7px 10px;border-bottom:1px solid var(--border);letter-spacing:.05em;text-transform:uppercase;background:#FAFBFC}
+td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFCFE}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:400}
+.badge-success{background:var(--success-bg);color:var(--success-text)}
+.badge-warning{background:var(--warning-bg);color:var(--warning-text)}
+.badge-danger{background:var(--danger-bg);color:var(--danger-text)}
+.badge-info{background:var(--info-bg);color:var(--info-text)}
+.badge-muted{background:var(--light);color:var(--text2)}
+.btn-sm{font-size:11.5px;padding:5px 11px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;color:var(--text);transition:.15s}
+.btn-sm:hover{background:var(--light);border-color:#C9A84C;color:var(--nav)}
+.btn-gold{background:#C9A84C;color:#0A1628;border-color:#C9A84C;font-weight:600}
+.btn-gold:hover{background:#E8C96A;border-color:#E8C96A;color:#0A1628}
+.progress-bar{height:6px;background:var(--light);border-radius:3px;overflow:hidden;margin-top:5px}
+.progress-fill{height:100%;border-radius:3px;background:#C9A84C}
+.timeline-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.timeline-item:last-child{border-bottom:none}
+.timeline-dot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.dot-green{background:var(--success-text)}.dot-amber{background:var(--warning-text)}.dot-red{background:var(--danger-text)}.dot-blue{background:var(--info-text)}
+.tl-main{font-size:12.5px;color:var(--text)}.tl-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.chart-bars{display:flex;align-items:flex-end;gap:7px;height:88px;padding-top:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;background:#C9A84C;border-radius:3px 3px 0 0;min-height:4px}
+.bar-label{font-size:10.5px;color:var(--text2)}
+.upcoming-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border)}
+.upcoming-item:last-child{border-bottom:none}
+.date-box{background:var(--info-bg);border-radius:7px;padding:4px 9px;text-align:center;min-width:38px;flex-shrink:0}
+.date-day{font-size:15px;font-weight:600;color:var(--info-text)}.date-mo{font-size:10px;color:var(--info-text)}
+.search-bar{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.search-bar input{flex:1;padding:7px 11px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);font-size:12.5px}
+.search-bar input:focus{outline:none;border-color:#C9A84C}
+.filter-select{padding:7px 9px;border:1px solid var(--border);border-radius:7px;background:#fff;color:var(--text);font-size:12px}
+.kra-dispute-card{border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:#fff}
+.kra-dispute-card.urgent{border-left:3px solid var(--danger-text)}
+.kra-dispute-card.mid{border-left:3px solid var(--warning-text)}
+.kra-dispute-card.info{border-left:3px solid var(--info-text)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="topbar">
+  <div class="topbar-logo">Capital<span>stance</span> <span style="color:rgba(255,255,255,.3);font-size:10px;font-weight:400;margin-left:4px">ADMIN</span></div>
+  <div class="topbar-right">
+    <span class="topbar-badge">5 pending tasks</span>
+    <div class="topbar-date">April 23, 2025</div>
+    <div class="avatar">AM</div>
+  </div>
+</div>
+
+<div class="sidebar">
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" onclick="nav(this,'dashboard')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+    Dashboard
+  </div>
+  <div class="nav-section">Client Management</div>
+  <div class="nav-item" onclick="nav(this,'clients')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><circle cx="6" cy="5" r="3"/><path d="M1 14c0-3 2-5 5-5s5 2 5 5"/><path d="M11 7c1.5 0 4 1 4 5"/></svg>
+    Clients
+  </div>
+  <div class="nav-item" onclick="nav(this,'enquiries')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M2 3h12v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3z"/><path d="M2 3l6 5 6-5"/></svg>
+    Enquiries
+    <span class="nav-badge">4</span>
+  </div>
+  <div class="nav-section">Finance</div>
+  <div class="nav-item" onclick="nav(this,'obligations')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><rect x="1" y="3" width="14" height="11" rx="1"/><path d="M1 6h14M5 1v4M11 1v4"/></svg>
+    Tax Obligations
+    <span class="nav-badge">3</span>
+  </div>
+  <div class="nav-item" onclick="nav(this,'invoices')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M4 1h8l3 3v10a1 1 0 01-1 1H4a1 1 0 01-1-1V2a1 1 0 011-1z"/><path d="M9 1v4h4M5 8h6M5 11h4"/></svg>
+    Invoices & Payments
+  </div>
+  <div class="nav-section">Operations</div>
+  <div class="nav-item" onclick="nav(this,'consultations')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+    Consultations
+  </div>
+  <div class="nav-item" onclick="nav(this,'disputes')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M8 2l1.5 3.5L13 6l-2.5 2.5.5 3.5L8 10.5 5 12l.5-3.5L3 6l3.5-.5z"/></svg>
+    KRA Disputes
+  </div>
+  <div class="nav-item" onclick="nav(this,'insights')">
+    <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M2 12h2V8H2zM7 12h2V4H7zM12 12h2V6h-2z"/></svg>
+    Insights / Blog
+  </div>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="view-dashboard" class="view active">
+  <div class="page-title">Dashboard</div>
+  <div class="page-sub">Welcome back — here's your practice overview for April 2025</div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Active clients</div><div class="metric-value">34</div><div class="metric-sub up">+3 this month</div></div>
+    <div class="metric"><div class="metric-label">Revenue (Apr)</div><div class="metric-value">KES 284K</div><div class="metric-sub up">+12% vs Mar</div></div>
+    <div class="metric"><div class="metric-label">Outstanding invoices</div><div class="metric-value">KES 96K</div><div class="metric-sub warn">6 unpaid</div></div>
+    <div class="metric"><div class="metric-label">Overdue obligations</div><div class="metric-value">3</div><div class="metric-sub danger">Action needed</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Monthly revenue (KES '000)</div>
+      <div class="chart-bars">
+        <div class="bar-col"><div class="bar" style="height:45%"></div><div class="bar-label">Nov</div></div>
+        <div class="bar-col"><div class="bar" style="height:52%"></div><div class="bar-label">Dec</div></div>
+        <div class="bar-col"><div class="bar" style="height:60%"></div><div class="bar-label">Jan</div></div>
+        <div class="bar-col"><div class="bar" style="height:55%"></div><div class="bar-label">Feb</div></div>
+        <div class="bar-col"><div class="bar" style="height:70%"></div><div class="bar-label">Mar</div></div>
+        <div class="bar-col"><div class="bar" style="height:82%;background:#E8C96A"></div><div class="bar-label" style="font-weight:600">Apr</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:9px;font-size:11.5px">
+        <span style="color:var(--text2)">6-month trend</span>
+        <span style="color:var(--success-text)">+33% growth</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Upcoming this week</div>
+      <div class="upcoming-item"><div class="date-box"><div class="date-day">24</div><div class="date-mo">Apr</div></div><div><div class="tl-main">VAT return — Serene Foods Ltd</div><div class="tl-sub">Filing due · VAT-2025-03</div></div></div>
+      <div class="upcoming-item"><div class="date-box"><div class="date-day">25</div><div class="date-mo">Apr</div></div><div><div class="tl-main">Consultation — James Mwangi</div><div class="tl-sub">Tax planning · 10:00 AM · Video call</div></div></div>
+      <div class="upcoming-item"><div class="date-box" style="background:var(--warning-bg)"><div class="date-day" style="color:var(--warning-text)">28</div><div class="date-mo" style="color:var(--warning-text)">Apr</div></div><div><div class="tl-main">PAYE — 3 clients due</div><div class="tl-sub">Monthly statutory · Pending prep</div></div></div>
+      <div class="upcoming-item"><div class="date-box"><div class="date-day">30</div><div class="date-mo">Apr</div></div><div><div class="tl-main">Corporate Tax — TechNova Kenya</div><div class="tl-sub">CIT return 2024 FY · Final review</div></div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Recent activity</div>
+      <div class="timeline-item"><div class="timeline-dot dot-green"></div><div><div class="tl-main">Invoice INV-2025-0041 paid — Mara Ventures</div><div class="tl-sub">KES 45,000 via M-Pesa · 2 hrs ago</div></div></div>
+      <div class="timeline-item"><div class="timeline-dot dot-blue"></div><div><div class="tl-main">New enquiry from website — startup founder</div><div class="tl-sub">Company setup advisory · 4 hrs ago</div></div></div>
+      <div class="timeline-item"><div class="timeline-dot dot-green"></div><div><div class="tl-main">VAT filed — Horizon Agri Ltd</div><div class="tl-sub">March 2025 return · KRA ack received · Yesterday</div></div></div>
+      <div class="timeline-item"><div class="timeline-dot dot-amber"></div><div><div class="tl-main">KRA objection filed — Apex Builders</div><div class="tl-sub">Assessment dispute · KES 340K · Yesterday</div></div></div>
+      <div class="timeline-item"><div class="timeline-dot dot-red"></div><div><div class="tl-main">Invoice overdue — Summit Logistics</div><div class="tl-sub">INV-2025-0037 · 14 days overdue · KES 28,500</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Services breakdown</div>
+      <div style="display:grid;gap:9px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px"><span>Tax Compliance</span><span style="color:var(--text2)">14 clients</span></div><div class="progress-bar"><div class="progress-fill" style="width:82%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px"><span>Payroll & Statutory</span><span style="color:var(--text2)">11 clients</span></div><div class="progress-bar"><div class="progress-fill" style="width:65%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px"><span>SME Advisory</span><span style="color:var(--text2)">7 clients</span></div><div class="progress-bar"><div class="progress-fill" style="width:41%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px"><span>Tax Planning</span><span style="color:var(--text2)">5 clients</span></div><div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12.5px"><span>KRA Disputes</span><span style="color:var(--text2)">3 active</span></div><div class="progress-bar"><div class="progress-fill" style="width:18%;background:#E24B4A"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div id="view-clients" class="view">
+  <div class="page-title">Clients</div>
+  <div class="page-sub">All active client accounts and engagement status</div>
+  <div class="search-bar">
+    <input placeholder="Search clients, KRA PIN, company name...">
+    <select class="filter-select"><option>All types</option><option>SME</option><option>Startup</option><option>Director</option><option>Investor</option></select>
+    <select class="filter-select"><option>All status</option><option>Active</option><option>Prospect</option><option>Inactive</option></select>
+    <button class="btn-sm btn-gold">+ Add client</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:26%">Company</th><th style="width:11%">Type</th><th style="width:16%">KRA PIN</th><th style="width:15%">Services</th><th style="width:14%">Balance due</th><th style="width:10%">Status</th><th style="width:8%"></th></tr></thead>
+      <tbody>
+        <tr><td><div style="font-weight:600">Serene Foods Ltd</div><div style="font-size:11px;color:var(--text2)">Faith Njoroge · +254 722 111 222</div></td><td><span class="badge badge-info">SME</span></td><td style="font-family:monospace;font-size:11px">A003456789B</td><td>Compliance, Payroll</td><td style="color:var(--success-text)">KES 0</td><td><span class="badge badge-success">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+        <tr><td><div style="font-weight:600">TechNova Kenya</div><div style="font-size:11px;color:var(--text2)">Brian Ochieng · +254 711 333 444</div></td><td><span class="badge badge-info">Startup</span></td><td style="font-family:monospace;font-size:11px">A007821034C</td><td>Tax Planning, CIT</td><td style="color:var(--danger-text)">KES 28,500</td><td><span class="badge badge-success">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+        <tr><td><div style="font-weight:600">Apex Builders Ltd</div><div style="font-size:11px;color:var(--text2)">John Kamau · +254 733 555 666</div></td><td><span class="badge badge-info">SME</span></td><td style="font-family:monospace;font-size:11px">A001122334D</td><td>Compliance, Dispute</td><td style="color:var(--warning-text)">KES 15,000</td><td><span class="badge badge-warning">Dispute</span></td><td><button class="btn-sm">View</button></td></tr>
+        <tr><td><div style="font-weight:600">Mara Ventures</div><div style="font-size:11px;color:var(--text2)">Grace Wambui · +254 744 777 888</div></td><td><span class="badge badge-muted">Investor</span></td><td style="font-family:monospace;font-size:11px">A005566778E</td><td>SME Advisory</td><td style="color:var(--success-text)">KES 0</td><td><span class="badge badge-success">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+        <tr><td><div style="font-weight:600">Horizon Agri Ltd</div><div style="font-size:11px;color:var(--text2)">Peter Muli · +254 700 999 100</div></td><td><span class="badge badge-info">SME</span></td><td style="font-family:monospace;font-size:11px">A009988776F</td><td>VAT, PAYE</td><td style="color:var(--success-text)">KES 0</td><td><span class="badge badge-success">Active</span></td><td><button class="btn-sm">View</button></td></tr>
+        <tr><td><div style="font-weight:600">Summit Logistics</div><div style="font-size:11px;color:var(--text2)">Diana Achieng · +254 712 100 200</div></td><td><span class="badge badge-info">SME</span></td><td style="font-family:monospace;font-size:11px">A002233445G</td><td>Payroll, Compliance</td><td style="color:var(--danger-text)">KES 28,500</td><td><span class="badge badge-danger">Overdue</span></td><td><button class="btn-sm">View</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ENQUIRIES -->
+<div id="view-enquiries" class="view">
+  <div class="page-title">Enquiries</div>
+  <div class="page-sub">Website and WhatsApp leads — track and convert to clients</div>
+  <div class="search-bar">
+    <input placeholder="Search name, email, service interest...">
+    <select class="filter-select"><option>All status</option><option>New</option><option>Contacted</option><option>Qualified</option><option>Converted</option></select>
+    <button class="btn-sm btn-gold">+ Log enquiry</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:20%">Name</th><th style="width:18%">Contact</th><th style="width:22%">Service interest</th><th style="width:12%">Source</th><th style="width:11%">Date</th><th style="width:10%">Status</th><th style="width:7%"></th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:600">Samuel Otieno</td><td style="font-size:11px">+254 722 400 500</td><td>Company Setup Advisory</td><td><span class="badge badge-info">Website</span></td><td>Apr 23</td><td><span class="badge badge-danger">New</span></td><td><button class="btn-sm">Open</button></td></tr>
+        <tr><td style="font-weight:600">Amina Hassan</td><td style="font-size:11px">amina@email.com</td><td>Tax Planning & Structuring</td><td><span class="badge badge-success">WhatsApp</span></td><td>Apr 22</td><td><span class="badge badge-danger">New</span></td><td><button class="btn-sm">Open</button></td></tr>
+        <tr><td style="font-weight:600">Robert Kiprotich</td><td style="font-size:11px">+254 733 600 700</td><td>KRA Dispute</td><td><span class="badge badge-muted">Referral</span></td><td>Apr 21</td><td><span class="badge badge-warning">Contacted</span></td><td><button class="btn-sm">Open</button></td></tr>
+        <tr><td style="font-weight:600">Naomi Wangari</td><td style="font-size:11px">naomi@biz.co.ke</td><td>SME Advisory</td><td><span class="badge badge-info">Website</span></td><td>Apr 20</td><td><span class="badge badge-warning">Contacted</span></td><td><button class="btn-sm">Open</button></td></tr>
+        <tr><td style="font-weight:600">David Mutua</td><td style="font-size:11px">+254 700 800 900</td><td>Payroll Setup</td><td><span class="badge badge-success">WhatsApp</span></td><td>Apr 18</td><td><span class="badge badge-info">Qualified</span></td><td><button class="btn-sm">Open</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAX OBLIGATIONS -->
+<div id="view-obligations" class="view">
+  <div class="page-title">Tax obligations</div>
+  <div class="page-sub">Filing tracker across all clients — VAT, PAYE, CIT, NSSF, NHIF</div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Due this week</div><div class="metric-value">5</div><div class="metric-sub warn">Needs attention</div></div>
+    <div class="metric"><div class="metric-label">Overdue</div><div class="metric-value">3</div><div class="metric-sub danger">File immediately</div></div>
+    <div class="metric"><div class="metric-label">Filed this month</div><div class="metric-value">18</div><div class="metric-sub up">On track</div></div>
+    <div class="metric"><div class="metric-label">Nil returns</div><div class="metric-value">4</div><div class="metric-sub" style="color:var(--text2)">Submitted</div></div>
+  </div>
+  <div class="search-bar">
+    <input placeholder="Search client or obligation type...">
+    <select class="filter-select"><option>All types</option><option>VAT</option><option>PAYE</option><option>CIT</option><option>NSSF</option><option>NHIF</option></select>
+    <select class="filter-select"><option>All status</option><option>Pending</option><option>Filed</option><option>Overdue</option></select>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:24%">Client</th><th style="width:11%">Type</th><th style="width:11%">Period</th><th style="width:12%">Due date</th><th style="width:14%">Tax payable</th><th style="width:11%">Status</th><th style="width:17%">KRA ack #</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:600">Serene Foods Ltd</td><td>VAT</td><td>2025-03</td><td style="color:var(--danger-text);font-weight:600">Apr 20 !</td><td>KES 34,200</td><td><span class="badge badge-danger">Overdue</span></td><td style="font-family:monospace;font-size:11px;color:var(--text2)">—</td></tr>
+        <tr><td style="font-weight:600">Summit Logistics</td><td>PAYE</td><td>2025-03</td><td style="color:var(--danger-text);font-weight:600">Apr 9 !</td><td>KES 12,800</td><td><span class="badge badge-danger">Overdue</span></td><td style="font-family:monospace;font-size:11px;color:var(--text2)">—</td></tr>
+        <tr><td style="font-weight:600">TechNova Kenya</td><td>CIT</td><td>2024-FY</td><td>Apr 30</td><td>KES 180,000</td><td><span class="badge badge-warning">Pending</span></td><td style="font-family:monospace;font-size:11px;color:var(--text2)">—</td></tr>
+        <tr><td style="font-weight:600">Mara Ventures</td><td>PAYE</td><td>2025-03</td><td>Apr 28</td><td>KES 8,400</td><td><span class="badge badge-warning">Pending</span></td><td style="font-family:monospace;font-size:11px;color:var(--text2)">—</td></tr>
+        <tr><td style="font-weight:600">Horizon Agri Ltd</td><td>VAT</td><td>2025-03</td><td>Apr 20</td><td>KES 22,600</td><td><span class="badge badge-success">Filed</span></td><td style="font-family:monospace;font-size:11px">KRA24033821</td></tr>
+        <tr><td style="font-weight:600">Apex Builders Ltd</td><td>PAYE</td><td>2025-03</td><td>Apr 9</td><td>KES 19,500</td><td><span class="badge badge-success">Filed</span></td><td style="font-family:monospace;font-size:11px">KRA24031144</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INVOICES -->
+<div id="view-invoices" class="view">
+  <div class="page-title">Invoices & payments</div>
+  <div class="page-sub">Billing management and M-Pesa / bank payment reconciliation</div>
+  <div class="metrics">
+    <div class="metric"><div class="metric-label">Total billed (Apr)</div><div class="metric-value">KES 380K</div><div class="metric-sub up">8 invoices</div></div>
+    <div class="metric"><div class="metric-label">Collected</div><div class="metric-value">KES 284K</div><div class="metric-sub up">75% collection rate</div></div>
+    <div class="metric"><div class="metric-label">Outstanding</div><div class="metric-value">KES 96K</div><div class="metric-sub warn">6 invoices</div></div>
+    <div class="metric"><div class="metric-label">Overdue (14d+)</div><div class="metric-value">KES 28.5K</div><div class="metric-sub danger">1 invoice</div></div>
+  </div>
+  <div class="search-bar">
+    <input placeholder="Search invoice number or client...">
+    <select class="filter-select"><option>All status</option><option>Draft</option><option>Sent</option><option>Paid</option><option>Overdue</option></select>
+    <button class="btn-sm btn-gold">+ New invoice</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:14%">Invoice #</th><th style="width:22%">Client</th><th style="width:17%">Service</th><th style="width:12%">Amount</th><th style="width:10%">Due</th><th style="width:10%">Method</th><th style="width:10%">Status</th><th style="width:5%"></th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:monospace;font-size:11px">INV-2025-0041</td><td style="font-weight:600">Mara Ventures</td><td>SME Advisory</td><td>KES 45,000</td><td>Apr 15</td><td style="font-size:11px">M-Pesa</td><td><span class="badge badge-success">Paid</span></td><td><button class="btn-sm">PDF</button></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">INV-2025-0042</td><td style="font-weight:600">TechNova Kenya</td><td>CIT Filing</td><td>KES 35,000</td><td>Apr 25</td><td style="font-size:11px">Bank</td><td><span class="badge badge-warning">Sent</span></td><td><button class="btn-sm">PDF</button></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">INV-2025-0043</td><td style="font-weight:600">Serene Foods Ltd</td><td>Compliance Q1</td><td>KES 28,000</td><td>Apr 28</td><td style="font-size:11px">—</td><td><span class="badge badge-muted">Draft</span></td><td><button class="btn-sm">Edit</button></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">INV-2025-0037</td><td style="font-weight:600">Summit Logistics</td><td>Payroll Mar</td><td>KES 28,500</td><td>Apr 9</td><td style="font-size:11px">—</td><td><span class="badge badge-danger">Overdue</span></td><td><button class="btn-sm">Chase</button></td></tr>
+        <tr><td style="font-family:monospace;font-size:11px">INV-2025-0040</td><td style="font-weight:600">Horizon Agri Ltd</td><td>VAT Filing</td><td>KES 18,000</td><td>Apr 20</td><td style="font-size:11px">M-Pesa</td><td><span class="badge badge-success">Paid</span></td><td><button class="btn-sm">PDF</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CONSULTATIONS -->
+<div id="view-consultations" class="view">
+  <div class="page-title">Consultations</div>
+  <div class="page-sub">Appointment scheduling and session outcome tracking</div>
+  <div class="search-bar">
+    <input placeholder="Search client name or topic...">
+    <select class="filter-select"><option>All types</option><option>In-person</option><option>Video</option><option>Phone</option><option>WhatsApp</option></select>
+    <button class="btn-sm btn-gold">+ Book session</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:16%">Date & time</th><th style="width:20%">Client / prospect</th><th style="width:24%">Topic</th><th style="width:11%">Type</th><th style="width:10%">Duration</th><th style="width:11%">Status</th><th style="width:8%"></th></tr></thead>
+      <tbody>
+        <tr><td><div style="font-weight:600">Apr 25</div><div style="font-size:11px;color:var(--text2)">10:00 AM</div></td><td style="font-weight:600">James Mwangi</td><td>Tax planning & director structure</td><td><span class="badge badge-info">Video</span></td><td>60 min</td><td><span class="badge badge-info">Confirmed</span></td><td><button class="btn-sm">Notes</button></td></tr>
+        <tr><td><div style="font-weight:600">Apr 26</div><div style="font-size:11px;color:var(--text2)">2:00 PM</div></td><td style="font-weight:600">Samuel Otieno</td><td>Company setup advisory</td><td><span class="badge badge-muted">Phone</span></td><td>30 min</td><td><span class="badge badge-warning">Scheduled</span></td><td><button class="btn-sm">Notes</button></td></tr>
+        <tr><td><div style="font-weight:600">Apr 23</div><div style="font-size:11px;color:var(--text2)">9:00 AM</div></td><td style="font-weight:600">Apex Builders Ltd</td><td>KRA dispute strategy review</td><td><span class="badge badge-success">In-person</span></td><td>90 min</td><td><span class="badge badge-success">Completed</span></td><td><button class="btn-sm">Notes</button></td></tr>
+        <tr><td><div style="font-weight:600">Apr 22</div><div style="font-size:11px;color:var(--text2)">11:30 AM</div></td><td style="font-weight:600">Naomi Wangari</td><td>SME advisory intro</td><td><span class="badge badge-muted">WhatsApp</span></td><td>45 min</td><td><span class="badge badge-success">Completed</span></td><td><button class="btn-sm">Notes</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- KRA DISPUTES -->
+<div id="view-disputes" class="view">
+  <div class="page-title">KRA disputes</div>
+  <div class="page-sub">Audit and assessment tracker — objections, appeals, and settlements</div>
+  <div class="metrics" style="grid-template-columns:repeat(3,1fr)">
+    <div class="metric"><div class="metric-label">Open disputes</div><div class="metric-value">3</div><div class="metric-sub warn">Active cases</div></div>
+    <div class="metric"><div class="metric-label">Total disputed amount</div><div class="metric-value">KES 1.2M</div><div class="metric-sub warn">Across 3 clients</div></div>
+    <div class="metric"><div class="metric-label">Resolved (YTD)</div><div class="metric-value">2</div><div class="metric-sub up">KES 480K settled</div></div>
+  </div>
+  <div class="kra-dispute-card urgent">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div><div style="font-weight:600;font-size:13px">Serene Foods Ltd</div><div style="font-size:11.5px;color:var(--text2);margin-top:2px">Withholding Tax · 2024-Q3 · KES 180,000</div></div><span class="badge badge-danger">Urgent — Open</span></div>
+    <div style="font-size:12.5px;color:var(--text2);line-height:1.65">KRA demand notice received Apr 20 for non-deduction of withholding tax on service payments. Initial review underway — formal response required within 14 days.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:9px;border-top:1px solid var(--border)"><div style="font-size:11.5px;color:var(--danger-text);font-weight:500">Response deadline: May 4, 2025</div><button class="btn-sm">Update case</button></div>
+  </div>
+  <div class="kra-dispute-card mid">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div><div style="font-weight:600;font-size:13px">Apex Builders Ltd</div><div style="font-size:11.5px;color:var(--text2);margin-top:2px">VAT Assessment · 2022–2023 · KES 340,000</div></div><span class="badge badge-warning">Objection filed</span></div>
+    <div style="font-size:12.5px;color:var(--text2);line-height:1.65">KRA assessment for under-declared VAT output. Objection filed Apr 18 with supporting input tax documentation. KRA response expected within 30 days from filing date.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:9px;border-top:1px solid var(--border)"><div style="font-size:11.5px;color:var(--warning-text);font-weight:500">Follow up KRA: May 18, 2025</div><button class="btn-sm">Update case</button></div>
+  </div>
+  <div class="kra-dispute-card info">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div><div style="font-weight:600;font-size:13px">TechNova Kenya</div><div style="font-size:11.5px;color:var(--text2);margin-top:2px">PAYE Audit · 2023 · KES 680,000</div></div><span class="badge badge-info">Under review</span></div>
+    <div style="font-size:12.5px;color:var(--text2);line-height:1.65">KRA desk audit on PAYE classification for software contractors. Documentation submitted March 2025. Meeting with KRA compliance officer scheduled for May 5.</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:9px;border-top:1px solid var(--border)"><div style="font-size:11.5px;color:var(--info-text);font-weight:500">KRA meeting: May 5, 2025</div><button class="btn-sm">Update case</button></div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div id="view-insights" class="view">
+  <div class="page-title">Insights / blog</div>
+  <div class="page-sub">Manage published articles, drafts, and newsletter campaigns</div>
+  <div class="search-bar">
+    <input placeholder="Search title or category...">
+    <select class="filter-select"><option>All status</option><option>Published</option><option>Draft</option><option>Archived</option></select>
+    <button class="btn-sm btn-gold">+ New article</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th style="width:42%">Title</th><th style="width:18%">Category</th><th style="width:14%">Published</th><th style="width:10%">Views</th><th style="width:10%">Status</th><th style="width:6%"></th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:600">KRA Digital Service Tax for Foreign Firms</td><td><span class="badge badge-info">Tax Update</span></td><td>Apr 1, 2025</td><td>284</td><td><span class="badge badge-success">Published</span></td><td><button class="btn-sm">Edit</button></td></tr>
+        <tr><td style="font-weight:600">5 VAT Mistakes That Attract KRA Audits</td><td><span class="badge badge-warning">SME Compliance</span></td><td>Apr 8, 2025</td><td>512</td><td><span class="badge badge-success">Published</span></td><td><button class="btn-sm">Edit</button></td></tr>
+        <tr><td style="font-weight:600">Director Loans and Tax Implications</td><td><span class="badge badge-muted">Director Strategy</span></td><td>Mar 15, 2025</td><td>391</td><td><span class="badge badge-success">Published</span></td><td><button class="btn-sm">Edit</button></td></tr>
+        <tr><td style="font-weight:600">2025 Finance Bill: Key Provisions for SMEs</td><td><span class="badge badge-info">Budget Analysis</span></td><td>Mar 1, 2025</td><td>723</td><td><span class="badge badge-success">Published</span></td><td><button class="btn-sm">Edit</button></td></tr>
+        <tr><td style="font-weight:600">NHIF & SHIF transition guide for employers</td><td><span class="badge badge-warning">SME Compliance</span></td><td>—</td><td>—</td><td><span class="badge badge-muted">Draft</span></td><td><button class="btn-sm">Edit</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-size:13px;font-weight:600">Newsletter</div><div style="font-size:12px;color:var(--text2);margin-top:2px">218 active subscribers · Last sent: Apr 8, 2025</div></div>
+    <button class="btn-sm btn-gold">Send newsletter</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+function nav(el, viewId) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewId).classList.add('active');
+}
+</script>
+</body>
+</html>
